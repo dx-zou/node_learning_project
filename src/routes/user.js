@@ -1,8 +1,12 @@
-const handleUserRouter = (req, res) => {
+const { loginCheck } = require("../controller/user");
+const { SuccessModel, ErrorModel } = require("../model/resModel");
+const handleUserRouter = req => {
   if (req.method === "POST" && req.path === "/api/user/login") {
-    return {
-      msg: "用户登录接口"
-    };
+    const loginStatus = loginCheck(req.body);
+
+    return loginStatus
+      ? new SuccessModel("登录成功")
+      : new ErrorModel("用户名或密码错误，登录失败");
   }
 };
 
