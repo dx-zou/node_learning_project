@@ -2,11 +2,11 @@
   "name": "node_learning_project",
   "version": "1.0.0",
   "description": "learning node the hard way",
-  "main": "app.js",
+  "main": "bin/www",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./bin/www"
+    "dev": "cross-env NODE_ENV=dev nodemon ./bin/www"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -29,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/dx-zou/node_learning_project/issues"
   },
-  "homepage": "https://github.com/dx-zou/node_learning_project#readme"
+  "homepage": "https://github.com/dx-zou/node_learning_project#readme",
+  "devDependencies": {
+    "cross-env": "^6.0.3"
+  }
 }
