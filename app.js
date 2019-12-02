@@ -40,9 +40,12 @@ const handleServer = (req, res) => {
   getPostData(req).then(postData => {
     req.body = postData;
     // 处理博客路由
-    const blogData = handleBlogRouter(req);
-    if (blogData) {
-      res.end(JSON.stringify(blogData));
+    const blogResult = handleBlogRouter(req);
+
+    if (blogResult) {
+      blogResult.then(blogData => {
+        res.end(JSON.stringify(blogData));
+      });
       return;
     }
 

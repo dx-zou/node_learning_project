@@ -8,9 +8,9 @@ const connection = mysql.createConnection(MYSQL_CONF);
 connection.connect();
 
 // 创建sql统一执行的方法
-function exec(sql) {
+function execSql(sql) {
   return new Promise((resolve, reject) => {
-    connection.query(err, res => {
+    connection.query(sql, (err, res) => {
       if (err) {
         reject(err);
         return;
@@ -20,4 +20,4 @@ function exec(sql) {
   });
 }
 
-module.exports = exec;
+module.exports = { execSql };
