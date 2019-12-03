@@ -52,7 +52,9 @@ const handleServer = (req, res) => {
     // 处理用户路由
     const userData = handleUserRouter(req);
     if (userData) {
-      res.end(JSON.stringify(userData));
+      userData.then(loginResult => {
+        res.end(JSON.stringify(loginResult));
+      });
       return;
     }
 
