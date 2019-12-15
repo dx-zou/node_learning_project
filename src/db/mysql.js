@@ -2,7 +2,13 @@ const mysql = require("mysql");
 const { MYSQL_CONF } = require("../conf/db");
 
 // 创建连接对象
-const connection = mysql.createConnection(MYSQL_CONF);
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "dx&ser703",
+  port: "3306",
+  database: "my_blog"
+});
 
 // 开始连接mysql
 connection.connect();

@@ -2,9 +2,8 @@ const { loginCheck } = require("../controller/user");
 const { SuccessModel, ErrorModel } = require("../model/resModel");
 const { setRedis } = require("../db/redis");
 const handleUserRouter = req => {
-  if (req.method === "POST" && req.path === "/api/user/login") {
-    console.log(loginCheck(req.body));
-    return loginCheck(req.body).then(res => {
+  if (req.method === "GET" && req.path === "/api/user/login") {
+    return loginCheck(req.query).then(res => {
       if (res.username) {
         // 设置 session
         req.session.username = res.username;
