@@ -1,8 +1,8 @@
 const { SuccessModel, ErrorModel } = require("../model/resModel");
-
 const { executeSql } = require("../db/mysql");
 // 获取博客列表
 const getBlogList = (req, res, next) => {
+  console.log("session:", req.session);
   const { author, keyword } = req.query;
   let sql = `select * from blogs where 1=1`;
   if (author) {

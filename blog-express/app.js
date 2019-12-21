@@ -1,5 +1,6 @@
 const createError = require("http-errors");
 const express = require("express");
+const app = express();
 const path = require("path");
 const fs = require("fs");
 const cookieParser = require("cookie-parser");
@@ -7,17 +8,11 @@ const logger = require("morgan");
 const session = require("express-session");
 const RedisStore = require("connect-redis")(session);
 const redisClient = require("./db/redis");
-const sessionStore = new RedisStore({
-  client: redisClient
-});
-// cors 处理跨域请求
-const cors = require("cors");
 // 引入博客路由模块
 const blogRouter = require("./routes/blog");
 // 引入用户路由模块
 const userRouter = require("./routes/user");
-
-const app = express();
+// 写入日志
 const ENV = process.env.NODE_ENV;
 if (ENV === "production") {
   app.use(logger("dev"));
@@ -30,20 +25,42 @@ if (ENV === "production") {
     })
   );
 }
-app.use(cors());
+// 处理跨域请求
+let allowOrigin = ["http://127.0.0.1:8080", "http://127.0.0.1:8081"];
+app.use((request, response, next) => {
+  let { origin } = request.headers;
+  if (allowOrigin.includes(origin)) {
+    response.setHeader("Access-Control-Allow-Origin", origin);
+    response.setHeader("Access-Control-Allow-Credentials", true);
+    response.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Content-Length, Authorization, Accept, X-Requested-With"
+    );
+    response.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, HEAD, DELETE, OPTIONS"
+    );
+    // response.setHeader("X-Powered-By", "3.2.1");
+  }
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser("FENG_123456$"));
+// 托管静态文件
 // app.use(express.static(path.join(__dirname, "public")));
+const sessionStore = new RedisStore({
+  client: redisClient
+});
 app.use(
   session({
-    secret: `dxFENG_703$`,
+    secret: `FENG_123456$`,
     resave: true,
     saveUninitialized: true,
     cookie: {
       path: "/", // 默认
       httpOnly: true, // 默认
-      maxAge: 24 * 60 * 60 * 1000
+      maxAge: 10 * 1000
     },
     store: sessionStore
   })

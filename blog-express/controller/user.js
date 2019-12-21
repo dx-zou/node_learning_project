@@ -8,13 +8,13 @@ const loginCheck = (req, res, next) => {
     return;
   }
   const sql = `
-    select username, realname from users where username='${username}' and password='${password}'
+    select username, realname,id from users where username='${username}' and password='${password}'
   `;
   executeSql(sql).then(result => {
-    if (result.username) {
-      req.session.username = result.username;
-      req.session.realname = result.realname;
-      res.json(new SuccessModel(result));
+    if (result.length) {
+      req.session.username = result[0].username;
+      req.session.sessionId = result[0].id;
+      res.json(new SuccessModel(result[0]));
       return;
     }
     res.json(new ErrorModel("登录失败"));
