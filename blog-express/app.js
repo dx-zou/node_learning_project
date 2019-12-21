@@ -50,9 +50,9 @@ app.use(
 );
 
 // 注册博客路由
-app.use("/api/blog", blogRouter);
+app.use("/pc_blog/blog", blogRouter);
 // 注册用户路由
-app.use("/api/user", userRouter);
+app.use("/pc_blog/user", userRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

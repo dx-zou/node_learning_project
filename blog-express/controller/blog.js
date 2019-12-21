@@ -1,9 +1,9 @@
-//
+const { SuccessModel, ErrorModel } = require("../model/resModel");
 
-const { execSql } = require("../db/mysql");
+const { executeSql } = require("../db/mysql");
 // 获取博客列表
-const getBlogList = (req, res) => {
-  const { author, keyword } = req;
+const getBlogList = (req, res, next) => {
+  const { author, keyword } = req.query;
   let sql = `select * from blogs where 1=1`;
   if (author) {
     sql += `and author='${author}' `;
@@ -12,12 +12,14 @@ const getBlogList = (req, res) => {
     sql += `and title like '%${keyword}%' `;
   }
   // sql += `order by createTime desc;`;
-  return execSql(sql);
+  return executeSql(sql).then(result => {
+    res.json(new SuccessModel(result));
+  });
 };
 // 获取博客详情
 const getBlogDetail = id => {
   let sql = `select * from blogs where id = '${id}'`;
-  return execSql(sql).then(rows => {
+  return executeSql(sql).then(rows => {
     return rows[0];
   });
 };
@@ -29,7 +31,7 @@ const newBlog = (blogData = {}) => {
     insert into blogs (title,content,author,createTime) 
     values('${title}', '${content}', '${author}', '${createTime}');
   `;
-  return execSql(sql).then(insertData => {
+  return executeSql(sql).then(insertData => {
     return {
       id: insertData.insertId
     };
@@ -38,7 +40,7 @@ const newBlog = (blogData = {}) => {
 const updateBlog = (blogData = {}) => {
   const { title, content, id } = blogData;
   const sql = `update blogs set title='${title}', content='${content}' where id = ${id}`;
-  return execSql(sql).then(updateData => {
+  return executeSql(sql).then(updateData => {
     if (updateData.affectedRows > 0) {
       return true;
     }
@@ -47,7 +49,7 @@ const updateBlog = (blogData = {}) => {
 };
 const deleteBlog = (id, author) => {
   const sql = `DELETE FROM blogs WHERE id=${id};`;
-  return execSql(sql).then(delData => {
+  return executeSql(sql).then(delData => {
     if (delData.affectedRows > 0) {
       return true;
     }

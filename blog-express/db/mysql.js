@@ -8,7 +8,7 @@ const connection = mysql.createConnection(MYSQL_CONF);
 connection.connect();
 
 // 创建sql统一执行的方法
-function execSql(sql) {
+function executeSql(sql) {
   return new Promise((resolve, reject) => {
     connection.query(sql, (err, res) => {
       if (err) {
@@ -20,4 +20,4 @@ function execSql(sql) {
   });
 }
 
-module.exports = { execSql };
+module.exports = { executeSql };

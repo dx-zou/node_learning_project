@@ -7,14 +7,8 @@ const {
   updateBlog,
   deleteBlog
 } = require("../controller/blog");
-const { SuccessModel, ErrorModel } = require("../model/resModel");
 
 // 获取列表
-router.get("/list", (req, res, next) => {
-  getBlogList(req).then(result => {
-    res.json(new SuccessModel(result));
-    next();
-  });
-});
+router.get("/list", getBlogList);
 
 module.exports = router;
