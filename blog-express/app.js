@@ -1,6 +1,7 @@
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const session = require("express-session");
@@ -9,14 +10,27 @@ const redisClient = require("./db/redis");
 const sessionStore = new RedisStore({
   client: redisClient
 });
+// cors 处理跨域请求
+const cors = require("cors");
 // 引入博客路由模块
 const blogRouter = require("./routes/blog");
 // 引入用户路由模块
 const userRouter = require("./routes/user");
 
 const app = express();
-console.log(process.env.NODE_ENV); // dev
-app.use(logger("dev"));
+const ENV = process.env.NODE_ENV;
+if (ENV === "production") {
+  app.use(logger("dev"));
+} else {
+  const logFileName = path.join(__dirname, "logs", "access.log");
+  const writeStream = fs.createWriteStream(logFileName, { flags: "a" });
+  app.use(
+    logger("combined", {
+      stream: writeStream
+    })
+  );
+}
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -34,6 +48,7 @@ app.use(
     store: sessionStore
   })
 );
+
 // 注册博客路由
 app.use("/api/blog", blogRouter);
 // 注册用户路由
@@ -52,7 +67,7 @@ app.use((err, req, res, next) => {
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  // res.render("error");
 });
 
 module.exports = app;
