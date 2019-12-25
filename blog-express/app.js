@@ -60,7 +60,7 @@ app.use(
     cookie: {
       path: "/", // 默认
       httpOnly: true, // 默认
-      maxAge: 10 * 1000
+      maxAge: 60 * 60 * 1000
     },
     store: sessionStore
   })
