@@ -1,7 +1,6 @@
 const { ErrorModel } = require("../model/resModel");
-/*
+/**
  * 登录验证中间件
- *
  * @param {*} req
  * @param {*} res
  * @param {*} next

@@ -12,6 +12,7 @@ const redisClient = require("./db/redis");
 const blogRouter = require("./routes/blog");
 // 引入用户路由模块
 const userRouter = require("./routes/user");
+const checkLogin = require("./middleware/checkHasLogin");
 // 写入日志
 const ENV = process.env.NODE_ENV;
 if (ENV === "production") {
@@ -27,23 +28,24 @@ if (ENV === "production") {
 }
 // 处理跨域请求
 let allowOrigin = ["http://127.0.0.1:8080", "http://127.0.0.1:8081"];
-app.use((request, response, next) => {
-  let { origin } = request.headers;
+app.use((req, res, next) => {
+  let { origin } = req.headers;
   if (allowOrigin.includes(origin)) {
-    response.setHeader("Access-Control-Allow-Origin", origin);
-    response.setHeader("Access-Control-Allow-Credentials", true);
-    response.setHeader(
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", true);
+    res.setHeader(
       "Access-Control-Allow-Headers",
       "Content-Type, Content-Length, Authorization, Accept, X-Requested-With"
     );
-    response.setHeader(
+    res.setHeader(
       "Access-Control-Allow-Methods",
       "GET, POST, PUT, HEAD, DELETE, OPTIONS"
     );
-    // response.setHeader("X-Powered-By", "3.2.1");
+    // res.setHeader("X-Powered-By", "3.2.1");
   }
   next();
 });
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("FENG_123456$"));
@@ -65,7 +67,6 @@ app.use(
     store: sessionStore
   })
 );
-
 // 注册博客路由
 app.use("/pc_blog/blog", blogRouter);
 // 注册用户路由

@@ -1,6 +1,5 @@
 const mysql = require("mysql");
 const { MYSQL_CONF } = require("../conf/db");
-
 // 创建连接对象
 const connection = mysql.createConnection(MYSQL_CONF);
 
@@ -20,4 +19,4 @@ function executeSql(sql) {
   });
 }
 
-module.exports = { executeSql };
+module.exports = { executeSql, escape: mysql.escape };
