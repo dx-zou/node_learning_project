@@ -14,8 +14,8 @@ const {
 // 获取列表
 router.get("/list", checkHasLogin, getBlogList);
 router.post("/add-blog", checkHasLogin, addBlog);
-router.get("/blog-detail", checkHasLogin, getBlogDetail);
-router.post("/update-blog", checkHasLogin, updateBlog);
-router.post("/delete-blog", checkHasLogin, deleteBlog);
+router.get("/blog-detail/:id", checkHasLogin, getBlogDetail);
+router.patch("/update-blog", checkHasLogin, updateBlog);
+router.delete("/delete-blog/:id", checkHasLogin, deleteBlog);
 
 module.exports = router;

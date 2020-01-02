@@ -39,7 +39,7 @@ app.use((req, res, next) => {
     );
     res.setHeader(
       "Access-Control-Allow-Methods",
-      "GET, POST, PUT, HEAD, DELETE, OPTIONS"
+      "GET, POST, PUT, PATCH, HEAD, DELETE, OPTIONS"
     );
     // res.setHeader("X-Powered-By", "3.2.1");
   }
