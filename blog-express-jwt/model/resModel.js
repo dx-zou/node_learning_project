@@ -1,7 +1,8 @@
 // 基本数据模型
 // 要求第一个参数对象类型，第二个参数字符串类型
 class BaseModel {
-  constructor(data, msg) {
+  constructor(data, msg, code) {
+    this.code = code;
     if (typeof data === "string") {
       this.msg = data;
       data = null;
@@ -19,16 +20,14 @@ class BaseModel {
 // 请求成功的数据模型
 class SuccessModel extends BaseModel {
   constructor(data, msg) {
-    super(data, msg);
-    this.code = 1;
+    super(data, msg, 1);
   }
 }
 
 // 请求失败的数据模型
 class ErrorModel extends BaseModel {
   constructor(data, msg) {
-    super(data, msg);
-    this.code = 0;
+    super(data, msg, 0);
   }
 }
 
