@@ -3,11 +3,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const fs = require("fs");
-const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const session = require("express-session");
-const RedisStore = require("connect-redis")(session);
-const redisClient = require("./db/redis");
 // 引入博客路由模块
 const blogRouter = require("./routes/blog");
 // 引入用户路由模块
@@ -47,25 +43,8 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser("FENG_123456$"));
 // 托管静态文件
 app.use(express.static(path.join(__dirname, "public")));
-const sessionStore = new RedisStore({
-  client: redisClient
-});
-app.use(
-  session({
-    secret: `FENG_123456$`,
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-      path: "/", // 默认
-      httpOnly: true, // 默认
-      maxAge: 60 * 60 * 1000
-    },
-    store: sessionStore
-  })
-);
 // 注册博客路由
 app.use("/pc_blog/blog", blogRouter);
 // 注册用户路由
