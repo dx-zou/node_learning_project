@@ -8,27 +8,27 @@ const { genPassword } = require("../utils/crypto");
  * @param {*} next
  * @returns
  */
-const userLogin = (req, res, next) => {
+const userLogin = async (req, res, next) => {
+  // 校验表单信息，加密密码，防xss
   const data = formCheck(req, res);
   if (!data) return;
   const { username, password } = data;
-  const sql = `
-    select username, realname,id from users where username=${username} and password=${password}
-  `;
-  const sql1 = `select username from users where username=${username}`;
-  executeSql(sql).then(result => {
-    if (result.length) {
-      res.json(new SuccessModel(result[0]));
-      return;
-    }
-    executeSql(sql1).then(row => {
-      if (!row.length) {
-        res.json(new ErrorModel("用户名不存在"));
-      } else {
-        res.json(new ErrorModel("密码错误"));
+  // 用户名是否存在
+  const hasOne = await findOne(username);
+  if (hasOne) {
+    const sql = `
+      select username, realname,id from users where username=${username} and password=${password}
+    `;
+    executeSql(sql).then(result => {
+      if (result.length) {
+        res.json(new SuccessModel(result[0]));
+        return;
       }
+      res.json(new ErrorModel("密码错误"));
     });
-  });
+  } else {
+    res.json(new ErrorModel("用户名不存在"));
+  }
 };
 
 /**
@@ -37,10 +37,16 @@ const userLogin = (req, res, next) => {
  * @param {*} res
  * @param {*} next
  */
-const userRegister = (req, res, next) => {
+const userRegister = async (req, res, next) => {
   const data = formCheck(req, res);
   if (!data) return;
   const { username, password } = data;
+  // 用户名是否存在
+  const hasOne = await findOne(username);
+  if (hasOne) {
+    res.json(new ErrorModel("用户名已存在"));
+    return;
+  }
   const sql = `insert into users (username,password) values(${username}, ${password})`;
   executeSql(sql).then(insertRes => {
     res.json(
@@ -71,4 +77,15 @@ const formCheck = (req, res) => {
   return { username, password };
 };
 
+/**
+ * @description 查询用户名唯一性
+ * @param {*} req
+ * @param {*} res
+ * @returns promise<pending>
+ */
+
+const findOne = username => {
+  const sql = `select username from users where username=${username}`;
+  return executeSql(sql).then(row => !!row.length);
+};
 module.exports = { userLogin, userRegister };
