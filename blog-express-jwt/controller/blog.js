@@ -12,10 +12,10 @@ const xss = require("xss");
  * @param {*} next
  */
 const getBlogList = (req, res, next) => {
-  const { author, keyword, pageSize = 10, page = 1 } = req.query;
-  const pageNo = page - 1;
-  let sql = `select * from blogs where isDelete=0 limit ${pageNo},${pageSize}`;
-  let totalSql = `select count(1) as total from blogs where 1=1`;
+  const { author, keyword, pageSize = 10, pageNo = 1 } = req.query;
+  const pageStart = (pageNo - 1) * pageSize;
+  let sql = `select * from blogs where isDelete=0 order by id limit ${pageStart},${pageSize}`;
+  let totalSql = `select count(1) as total from blogs where isDelete=0`;
   if (author) {
     sql += `and author='${author}' `;
   }
