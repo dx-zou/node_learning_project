@@ -1,6 +1,8 @@
 const { executeSql, escape } = require("../db/mysql");
 const { SuccessModel, ErrorModel } = require("../model/resModel");
 const { genPassword } = require("../utils/crypto");
+const jwt = require("jsonwebtoken");
+const { JWT_key } = require("../conf/secret_key");
 /**
  * @description 用户登录
  * @param {*} req
@@ -21,6 +23,8 @@ const userLogin = async (req, res, next) => {
     `;
     executeSql(sql).then(result => {
       if (result.length) {
+        const token = jwt.sign({ userId: result[0].id }, JWT_key);
+        res.setHeader("Authorization", token, { expiresIn: 5 * 60 });
         res.json(new SuccessModel(result[0]));
         return;
       }
@@ -83,7 +87,6 @@ const formCheck = (req, res) => {
  * @param {*} res
  * @returns promise<pending>
  */
-
 const findOne = username => {
   const sql = `select username from users where username=${username}`;
   return executeSql(sql).then(row => !!row.length);
