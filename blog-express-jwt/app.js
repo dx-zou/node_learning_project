@@ -4,6 +4,8 @@ const app = express();
 const path = require("path");
 const fs = require("fs");
 const logger = require("morgan");
+// 登录检测中间件
+const checkHasLogin = require("./middleware/checkHasLogin");
 // 引入博客路由模块
 const blogRouter = require("./routes/blog");
 // 引入用户路由模块
@@ -36,8 +38,10 @@ app.use((req, res, next) => {
       "Access-Control-Allow-Methods",
       "GET, POST, PUT, PATCH, HEAD, DELETE, OPTIONS"
     );
-    res.setHeader("X-Powered-By", "3.2.1");
-    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("X-Powered-By", "express");
+    res.setHeader("Cache-Control", "max-age=10000");
+    // res.setHeader("Pragma", "no-cache");
+
   }
   next();
 });
@@ -46,6 +50,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // 托管静态文件
 app.use(express.static(path.join(__dirname, "public")));
+// stream
+app.use('/', (req, res, next) => {
+  const rStream = fs.createReadStream(path.join(__dirname, './lib/test.txt'))
+  const wStream = fs.createWriteStream(path.join(__dirname, './lib/test2.txt'))
+  rStream.pipe(wStream)
+  rStream.on('end', () => {
+  })
+  next()
+})
 // 注册博客路由
 app.use("/pc_blog/blog", blogRouter);
 // 注册用户路由
@@ -53,6 +66,10 @@ app.use("/pc_blog/user", userRouter);
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
+  res.json({
+    status: 404,
+    message: 'api not found'
+  })
 });
 
 // error handler
