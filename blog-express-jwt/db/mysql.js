@@ -8,7 +8,11 @@ const pool = mysql.createPool(MYSQL_CONF);
 // 开始连接mysql
 // connection.connect();
 
-// 创建sql统一执行的方法
+/**
+ * @description 创建sql统一执行的方法
+ * @param {*} sql
+ * @returns
+ */
 function executeSql(sql) {
   return new Promise((resolve, reject) => {
     pool.getConnection((error, connection) => {

@@ -1,9 +1,9 @@
 const { SuccessModel, ErrorModel } = require("../model/resModel");
 const { executeSql } = require("../db/mysql");
-const logger = require("../conf/logger");
-const mysql = require("mysql");
-const { MYSQL_CONF } = require("../conf/db");
-const pool = mysql.createPool(MYSQL_CONF); // 创建连接池
+// const mysql = require("mysql");
+// const { MYSQL_CONF } = require("../conf/db");
+// const logger = require("../conf/logger");
+// const pool = mysql.createPool(MYSQL_CONF); // 创建连接池
 const xss = require("xss");
 /**
  * @description 生成博客列表

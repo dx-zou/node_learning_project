@@ -7,7 +7,7 @@ const { ErrorModel } = require("../model/resModel");
  * @returns
  */
 const checkHasLogin = (req, res, next) => {
-  if (req.session.sessionId) {
+  if (req.session && req.session.sessionId) {
     next();
     return;
   }
