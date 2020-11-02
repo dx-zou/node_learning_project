@@ -1,38 +1,40 @@
-const { SuccessModel, ErrorModel } = require("../model/resModel");
-const { executeSql } = require("../db/mysql");
-// const mysql = require("mysql");
-// const { MYSQL_CONF } = require("../conf/db");
-// const logger = require("../conf/logger");
-// const pool = mysql.createPool(MYSQL_CONF); // 创建连接池
-const xss = require("xss");
+const { SuccessModel, ErrorModel } = global;
+const { executeSql } = require('../db/mysql');
+const xss = require('xss');
+const models = require('../db/models');
+
 /**
  * @description 生成博客列表
  * @param {*} req
  * @param {*} res
  * @param {*} next
  */
-const getBlogList = (req, res, next) => {
-  const { author, keyword, pageSize = 10, pageNo = 1 } = req.query;
-  const pageStart = (pageNo - 1) * pageSize;
-  let sql = `select * from blogs where isDelete=0 order by id limit ${pageStart},${pageSize}`;
-  let totalSql = `select count(1) as total from blogs where isDelete=0`;
-  if (author) {
-    sql += `and author='${author}' `;
-  }
-  if (keyword) {
-    sql += `and title like '%${keyword}%' `;
-  }
-  executeSql(sql).then(result => {
-    executeSql(totalSql).then(totalRes => {
-      res.json(
-        new SuccessModel({
-          rows: result,
-          total: totalRes[0].total
-        })
-      );
-    });
-  });
+const getBlogList = async (req, res, next) => {
+	const { author, keyword, pageSize = 10, pageNum = 1 } = req.query;
+	// const pageStart = (pageNum - 1) * pageSize;
+	// let sql = `select * from blogs where isDelete=0 order by id limit ${pageStart},${pageSize}`;
+	// let totalSql = `select count(1) as total from blogs where isDelete=0`;
+	// if (author) {
+	// 	sql += `and author='${author}' `;
+	// }
+	// if (keyword) {
+	// 	sql += `and title like '%${keyword}%' `;
+	// }
+	// const result = await executeSql(sql);
+	// const totalRes = await executeSql(totalSql);
+	const { count, rows } = await models.blogs.findAndCountAll({
+		order: [['id']],
+		// offset: pageNum,
+		// limit: pageSize,
+	});
+	res.json(
+		new SuccessModel({
+			rows,
+			total: count,
+		})
+	);
 };
+
 
 /**
  * @description 获取博客详情
@@ -41,11 +43,11 @@ const getBlogList = (req, res, next) => {
  * @param {*} next
  */
 const getBlogDetail = (req, res, next) => {
-  const { id } = req.params;
-  let sql = `select * from blogs where id = '${id}'`;
-  executeSql(sql).then(rows => {
-    res.json(new SuccessModel(rows[0]));
-  });
+	const { id } = req.params;
+	let sql = `select * from blogs where id = '${id}'`;
+	executeSql(sql).then(rows => {
+		res.json(new SuccessModel(rows[0]));
+	});
 };
 /**
  * @description 新增博客
@@ -54,22 +56,22 @@ const getBlogDetail = (req, res, next) => {
  * @param {*} next
  */
 const addBlog = (req, res, next) => {
-  let { title, content, isTop } = req.body;
-  title = xss(title);
-  content = xss(content);
-  const author = req.session.username;
-  const createTime = Date.now();
-  const sql = `
-    insert into blogs (title,content,author,createTime,isTop) 
+	let { title, content, isTop } = req.body;
+	title = xss(title);
+	content = xss(content);
+	const author = req.session.username;
+	const createTime = Date.now();
+	const sql = `
+    insert into blogs (title,content,author,createTime,isTop)
     values('${title}', '${content}', '${author}', '${createTime}', '${isTop}');
   `;
-  executeSql(sql).then(insertData => {
-    res.json(
-      new SuccessModel({
-        id: insertData.insertId
-      })
-    );
-  });
+	executeSql(sql).then(insertData => {
+		res.json(
+			new SuccessModel({
+				id: insertData.insertId,
+			})
+		);
+	});
 };
 
 /**
@@ -79,16 +81,15 @@ const addBlog = (req, res, next) => {
  * @param {*} next
  */
 const updateBlog = (req, res, next) => {
-  console.log(req.body);
-  const { title, content, id, isTop } = req.body;
-  const sql = `update blogs set title='${title}', content='${content}', isTop='${isTop}' where id = ${id}`;
-  executeSql(sql).then(updateData => {
-    if (updateData.affectedRows > 0) {
-      res.json(new SuccessModel("编辑成功"));
-      return;
-    }
-    res.json(new ErrorModel("编辑失败"));
-  });
+	const { title, content, id, isTop } = req.body;
+	const sql = `update blogs set title='${title}', content='${content}', isTop='${isTop}' where id = ${id}`;
+	executeSql(sql).then(updateData => {
+		if (updateData.affectedRows > 0) {
+			res.json(new SuccessModel('编辑成功'));
+			return;
+		}
+		res.json(new ErrorModel('编辑失败'));
+	});
 };
 /**
  * @description 删除博客
@@ -97,21 +98,21 @@ const updateBlog = (req, res, next) => {
  * @param {*} next
  */
 const deleteBlog = (req, res, next) => {
-  const { id } = req.params;
-  // const sql = `DELETE FROM blogs WHERE id=${id}`;
-  const sql = `update blogs set isDelete=1 WHERE id=${id}`;
-  executeSql(sql).then(delData => {
-    if (delData.affectedRows > 0) {
-      res.json(new SuccessModel("删除成功"));
-      return;
-    }
-    res.json(new ErrorModel("删除失败"));
-  });
+	const { id } = req.params;
+	// const sql = `DELETE FROM blogs WHERE id=${id}`;
+	const sql = `update blogs set isDelete=1 WHERE id=${id}`;
+	executeSql(sql).then(delData => {
+		if (delData.affectedRows > 0) {
+			res.json(new SuccessModel('删除成功'));
+			return;
+		}
+		res.json(new ErrorModel('删除失败'));
+	});
 };
 module.exports = {
-  getBlogList,
-  getBlogDetail,
-  addBlog,
-  updateBlog,
-  deleteBlog
+	getBlogList,
+	getBlogDetail,
+	addBlog,
+	updateBlog,
+	deleteBlog,
 };
