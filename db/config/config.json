@@ -17,7 +17,7 @@
     "username": "root",
     "password": "098765",
     "database": "my_blog",
-    "host": "127.0.0.1",
+    "host": "47.95.1.121",
     "dialect": "mysql"
   }
 }

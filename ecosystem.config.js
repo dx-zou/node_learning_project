@@ -12,15 +12,18 @@ module.exports = {
 
 	deploy: {
 		production: {
-			user: 'SSH_USERNAME',
-			host: 'SSH_HOSTMACHINE',
+			user: 'root',
+			host: '47.95.1.121',
 			ref: 'origin/master',
-			repo: 'GIT_REPOSITORY',
-			path: 'DESTINATION_PATH',
+			repo: 'git@github.com:dx-zou/node_learning_project.git',
+			path: '/usr/local/www',
+			ssh_options: 'StrictHostKeyChecking=no',
 			'pre-deploy-local': '',
 			'post-deploy':
 				'cnpm install && pm2 reload ecosystem.config.js --env production',
-			'pre-setup': '',
+			env: {
+				NODE_ENV: 'production',
+			},
 		},
 	},
 };
