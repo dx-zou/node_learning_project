@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/node_learning_project.iml" filepath="$PROJECT_DIR$/.idea/node_learning_project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/blog-express-jwt.iml" filepath="$PROJECT_DIR$/.idea/blog-express-jwt.iml" />
     </modules>
   </component>
 </project>
