@@ -19,7 +19,8 @@ module.exports = {
 			path: '/usr/local/www',
 			ssh_options: 'StrictHostKeyChecking=no',
 			'pre-deploy-local': '',
-			'post-deploy': 'pm2 reload ecosystem.config.js --env production',
+			'post-deploy':
+				'cnpm install && pm2 reload ecosystem.config.js --env production',
 			env: {
 				NODE_ENV: 'production',
 			},
