@@ -20,7 +20,7 @@ module.exports = {
 			ssh_options: 'StrictHostKeyChecking=no',
 			'pre-deploy-local': '',
 			'post-deploy':
-				'npm install && pm2 reload ecosystem.config.js --env production',
+				'nvm use v12.19.0 && cnpm install && pm2 reload ecosystem.config.js --env production',
 			env: {
 				NODE_ENV: 'production',
 			},
