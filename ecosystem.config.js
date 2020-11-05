@@ -1,12 +1,17 @@
 module.exports = {
 	apps: [
 		{
-			script: 'index.js',
+			name: 'BLOG-APP',
+			script: 'app.js',
 			watch: '.',
-		},
-		{
-			script: './service-worker/',
-			watch: ['./service-worker'],
+			env: {
+				COMMON_VARIABLE: 'true',
+			},
+			// Environment variables injected when starting with --env production
+			// http://pm2.keymetrics.io/docs/usage/application-declaration/#switching-to-different-environments
+			env_production: {
+				NODE_ENV: 'production',
+			},
 		},
 	],
 
