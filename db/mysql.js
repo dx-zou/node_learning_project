@@ -17,7 +17,7 @@ function executeSql(sql) {
 	return new Promise((resolve, reject) => {
 		pool.getConnection((error, connection) => {
 			if (error) {
-				errLogger.error(errLogger);
+				errLogger.error(error);
 				reject(error);
 				return;
 			}

@@ -2,7 +2,7 @@ module.exports = {
 	apps: [
 		{
 			name: 'BLOG-APP',
-			script: 'app.js',
+			script: './bin/www',
 			watch: '.',
 			env: {
 				COMMON_VARIABLE: 'true',
