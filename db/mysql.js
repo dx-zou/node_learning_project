@@ -1,5 +1,7 @@
 const mysql = require('mysql');
-const { MYSQL_CONF } = require('../config/db');
+const config = require('./config/config.json');
+const env = process.env.NODE_ENV;
+const MYSQL_CONF = config[env];
 const errLogger = require('../config/logger');
 // 创建连接对象
 // const connection = mysql.createConnection(MYSQL_CONF);
@@ -13,7 +15,7 @@ const pool = mysql.createPool(MYSQL_CONF);
  * @param {*} sql
  * @returns
  */
-function executeSql(sql) {
+function appQuerySql(sql) {
 	return new Promise((resolve, reject) => {
 		pool.getConnection((error, connection) => {
 			if (error) {
@@ -34,4 +36,4 @@ function executeSql(sql) {
 	});
 }
 
-module.exports = { executeSql, escape: mysql.escape };
+module.exports = { appQuerySql, escape: mysql.escape };

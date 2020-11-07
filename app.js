@@ -3,7 +3,8 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const fs = require('fs');
-require('./utils/resModel');
+// 结果模型
+require('./utils/responseModel');
 // 登录检测中间件
 const checkHasLogin = require('./middleware/checkHasLogin');
 // 引入博客路由模块
