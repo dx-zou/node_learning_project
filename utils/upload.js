@@ -8,7 +8,10 @@ const storage = multer.diskStorage({
 		const year = date.getFullYear();
 		const month = (date.getMonth() + 1).toString().padStart(2, '0');
 		const day = date.getDate();
-		const dir = path.join(__dirname, '../public/uploads-' + year + month + day);
+		const dir = path.join(
+			__dirname,
+			'../../staticfile/uploads-' + year + month + day
+		);
 		if (!fs.existsSync(dir)) {
 			fs.mkdirSync(dir, { recursive: true });
 		}

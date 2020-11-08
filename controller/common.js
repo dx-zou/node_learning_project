@@ -9,7 +9,7 @@ const BASE_URL =
  * @param {*} next
  */
 const upload = (req, res, next) => {
-	const filePath = req.file.path.split('public')[1];
+	const filePath = req.file.path.split('staticfile')[1];
 	const fileUrl = `${BASE_URL}${filePath}`;
 	res.json(new SuccessModel(fileUrl));
 };

@@ -52,7 +52,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // 托管静态文件
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../staticfile')));
 // 登录状态校验
 app.use(checkHasLogin);
 // 注册公共模块
