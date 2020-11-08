@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const fs = require('fs');
+const cors = require('cors');
 // 结果模型
 require('./utils/responseModel');
 // 登录检测中间件
@@ -28,26 +29,24 @@ if (ENV === 'production') {
 	);
 }
 // 处理跨域请求
-const allowOrigin = ['http://127.0.0.1:8080', 'http://127.0.0.1:8081'];
-app.use((req, res, next) => {
-	let { origin } = req.headers;
-	if (allowOrigin.includes(origin)) {
-		res.setHeader('Access-Control-Allow-Origin', origin);
-		res.setHeader('Access-Control-Allow-Credentials', true);
-		res.setHeader(
-			'Access-Control-Allow-Headers',
-			'Content-Type, Content-Length, Authorization, Accept, X-Requested-With'
-		);
-		res.setHeader(
-			'Access-Control-Allow-Methods',
-			'GET, POST, PUT, PATCH, HEAD, DELETE, OPTIONS'
-		);
-		res.setHeader('X-Powered-By', 'express');
-		// res.setHeader("Cache-Control", "max-age=10000");
-		res.setHeader('Pragma', 'no-cache');
-	}
-	next();
-});
+const whitelist = ['http://127.0.0.1:8080', 'http://127.0.0.1:8081'];
+const corsOptions = {
+	origin(origin, callback) {
+		if (whitelist.indexOf(origin) !== -1 || !origin) {
+			callback(null, true);
+		} else {
+			callback(new Error('Not allowed by CORS'));
+		}
+	},
+	allowedHeaders:
+		'Content-Type, Content-Length, Authorization, Accept, X-Requested-With',
+	exposedHeaders: 'Authorization',
+	methods: 'GET, POST, PUT, PATCH, HEAD, DELETE',
+	preflightContinue: false,
+	credentials: false,
+	optionsSuccessStatus: 204,
+};
+app.use(cors(corsOptions));
 
 // 处理json
 app.use(express.json());
