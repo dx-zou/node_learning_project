@@ -5,7 +5,7 @@ module.exports = {
 			script: './bin/www',
 			instances: 1, // 开启的进程个数
 			autorestart: true, // 自动重启
-			watch: true, //监听文件变化，true则开启监听，文件若变化则会触发重启
+			watch: false, //监听文件变化，true则开启监听，文件若变化则会触发重启
 			max_memory_restart: '1G', // 允许此项目最大运行内存
 			env: {
 				COMMON_VARIABLE: 'true',
