@@ -7,9 +7,11 @@ const fs = require('fs');
 require('./utils/responseModel');
 // 登录检测中间件
 const checkHasLogin = require('./middleware/checkHasLogin');
-// 引入博客路由模块
+// 公共方法模块
+const commonRouter = require('./routes/common');
+// 博客模块
 const blogRouter = require('./routes/blog');
-// 引入用户路由模块
+// 用户模块
 const userRouter = require('./routes/user');
 // 写入日志
 const logger = require('morgan');
@@ -54,8 +56,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 // 登录状态校验
 app.use(checkHasLogin);
+// 注册公共模块
+app.use(commonRouter);
 // 注册博客路由
-app.use('/blog/api', blogRouter);
+app.use('/api/blog', blogRouter);
 // 注册用户路由
 app.use(userRouter);
 

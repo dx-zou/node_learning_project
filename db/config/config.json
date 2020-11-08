@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "mySql2020",
+    "password": "098765",
     "database": "my_blog",
     "host": "localhost",
     "dialect": "mysql"

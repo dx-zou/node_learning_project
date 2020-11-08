@@ -4,9 +4,6 @@ const jwt = require('jsonwebtoken');
 const { JWT_key } = require('../config/secret_key');
 const models = require('../db/models');
 
-const testApi = async (req, res, next) => {
-	res.json(new SuccessModel('token校验成功，允许访问'));
-};
 /**
  * @description 用户登录
  * @param {*} req
@@ -29,7 +26,9 @@ const userLogin = async (req, res, next) => {
 			},
 		});
 		if (result) {
-			const token = jwt.sign({ userId: result.dataValues.id }, JWT_key,{ expiresIn: '5m' });
+			const token = jwt.sign({ userId: result.dataValues.id }, JWT_key, {
+				expiresIn: '5m',
+			});
 			res.setHeader('Authorization', token);
 			res.json(new SuccessModel('登录成功'));
 			return;
@@ -102,4 +101,4 @@ const checkUnique = async username => {
 		},
 	});
 };
-module.exports = { userLogin, userRegister, testApi };
+module.exports = { userLogin, userRegister };
