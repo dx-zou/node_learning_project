@@ -19,6 +19,7 @@ module.exports = {
 				// 不⽤监听的⽂件
 				'node_modules', // 安装依赖的文件夹
 				'logs', // 日志文件
+				'public', // 静态文件
 			],
 			error_file: './logs/app-err.log', // 错误⽇志⽂件存放路径
 			out_file: './logs/app-out.log',
