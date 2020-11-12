@@ -1,6 +1,5 @@
-const jwt = require('jsonwebtoken');
-const { JWT_key } = require('../config/secret_key');
-const { ErrorModel } = global;
+const { verifyToken } = require('../utils/token');
+
 /**
  * 登录验证中间件
  * @param {*} req
@@ -16,19 +15,7 @@ const checkHasLogin = (req, res, next) => {
 		return;
 	}
 	const token = req.headers.authorization;
-	jwt.verify(token, JWT_key, (err, decoded) => {
-		if (err) {
-			res.json(new ErrorModel('登录已过期，请重新登录', null, 401));
-			return;
-		} else {
-			// 每次请求校验token通过后，重新签发新的token
-			const token = jwt.sign({ username: 'developer' }, JWT_key, {
-				expiresIn: '1h',
-			});
-			res.setHeader('Authorization', token);
-			next();
-		}
-	});
+	verifyToken(token, req, res, next);
 };
 
 module.exports = checkHasLogin;

@@ -3,8 +3,8 @@ const { PASSWORD_KEY } = require('../config/secret_key');
 
 // md5加密
 function md5(content) {
-	let md5 = crypto.createHash('md5');
-	return md5.update(content).digest('hex');
+	const domd5 = crypto.createHash('md5');
+	return domd5.update(content).digest('hex');
 }
 
 // 加密函数

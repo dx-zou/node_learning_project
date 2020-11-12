@@ -67,7 +67,7 @@ app.use((req, res, next) => {
 	next(createError(404));
 	res.json({
 		status: 404,
-		message: 'api not found',
+		message: 'API Not Found',
 	});
 });
 // error handler
