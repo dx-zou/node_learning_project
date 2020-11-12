@@ -1,8 +1,8 @@
 const { SuccessModel, ErrorModel } = global;
 const { genPassword } = require('../utils/crypto');
-const jwt = require('jsonwebtoken');
-const { JWT_key } = require('../config/secret_key');
-const models = require('../db/models');
+const { setToken } = require('../utils/token');
+const { users, sequelize } = require('../db/models');
+const { Op } = require('sequelize');
 
 /**
  * @description 用户登录
@@ -15,21 +15,19 @@ const userLogin = async (req, res, next) => {
 	// 校验表单信息，加密密码，防xss
 	const data = checkInputForm(req, res);
 	if (!data) return;
-	const { username, password } = data;
-	const hasOne = await checkUnique(username);
+	const { userName, password } = data;
+	const hasOne = await checkUnique(userName);
 	if (hasOne) {
 		// 用户名存在，校验密码
-		const result = await models.users.findOne({
+		const result = await users.findOne({
 			where: {
-				username,
+				userName,
 				password,
 			},
 		});
 		if (result) {
-			const token = jwt.sign({ userId: result.dataValues.id }, JWT_key, {
-				expiresIn: '5m',
-			});
-			res.setHeader('Authorization', token);
+			// 设置token
+			setToken({ userId: result.dataValues.id }, res);
 			res.json(new SuccessModel('登录成功'));
 			return;
 		}
@@ -46,18 +44,18 @@ const userLogin = async (req, res, next) => {
  * @param {*} next
  */
 const userRegister = async (req, res, next) => {
-	// const sql = `insert into users (username,password) values(${username}, ${password})`;
+	// const sql = `insert into users (userName,password) values(${userName}, ${password})`;
 	const data = checkInputForm(req, res);
 	if (!data) return;
-	const { username, realName, password } = data;
+	const { userName, realName, password } = data;
 	// 用户名是否存在
-	const hasOne = await checkUnique(username);
+	const hasOne = await checkUnique(userName);
 	if (hasOne) {
 		res.json(new ErrorModel('用户名已存在'));
 		return;
 	}
-	const user = await models.users.create({
-		username,
+	const user = await users.create({
+		userName,
 		realName,
 		password: genPassword(password),
 	});
@@ -75,17 +73,17 @@ const userRegister = async (req, res, next) => {
  * @returns
  */
 const checkInputForm = (req, res) => {
-	let { username, password } = req.body;
-	if (!username || !password) {
+	let { userName, password } = req.body;
+	if (!userName || !password) {
 		res.json(new ErrorModel('用户名或密码不能为空'));
 		return false;
 	}
 	// 加密密码
 	const pass = genPassword(password);
 	// // 防xss攻击
-	// username = escape(username);
+	// userName = escape(userName);
 	// password = escape(password);
-	return { username, password: pass };
+	return { userName, password: pass };
 };
 
 /**
@@ -94,11 +92,14 @@ const checkInputForm = (req, res) => {
  * @param {*} res
  * @returns promise<pending>
  */
-const checkUnique = async username => {
-	return await models.users.findOne({
+const checkUnique = async userName => {
+	return await users.findOne({
 		where: {
-			username,
+			userName,
 		},
 	});
 };
-module.exports = { userLogin, userRegister };
+module.exports = {
+	userLogin,
+	userRegister,
+};

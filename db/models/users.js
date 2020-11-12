@@ -13,13 +13,47 @@ module.exports = (sequelize, DataTypes) => {
 	}
 	users.init(
 		{
-			userName: DataTypes.STRING,
-			realName: DataTypes.STRING,
-			password: DataTypes.STRING,
+			id: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+				primaryKey: true,
+				autoIncrement: true,
+			},
+			userName: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				unique: true,
+				get() {
+					// 获取器
+					const rawValue = this.getDataValue('userName');
+					return rawValue ? rawValue.toUpperCase() : null;
+				},
+			},
+			realName: {
+				type: DataTypes.STRING,
+			},
+			fullName: {
+				// 虚拟列
+				type: DataTypes.VIRTUAL,
+				get() {
+					return `${this.userName}-${this.realName}`;
+				},
+			},
+			password: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				// set(value) {
+				// 设置器
+				// 	this.setDataValue('password', value)
+				// },
+			},
+			company: {
+				type: DataTypes.STRING,
+			},
 		},
 		{
 			sequelize,
-			timestamps: false,
+			timestamps: true,
 			modelName: 'users',
 		}
 	);

@@ -15,7 +15,7 @@ const pool = mysql.createPool(MYSQL_CONF);
  * @param {*} sql
  * @returns
  */
-function appQuerySql(sql) {
+function mysql_query(sql) {
 	return new Promise((resolve, reject) => {
 		pool.getConnection((error, connection) => {
 			if (error) {
@@ -36,4 +36,4 @@ function appQuerySql(sql) {
 	});
 }
 
-module.exports = { appQuerySql, escape: mysql.escape };
+module.exports = { mysql_query, escape: mysql.escape };
