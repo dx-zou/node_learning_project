@@ -1,6 +1,6 @@
 const { SuccessModel, ErrorModel } = global;
 const { genPassword } = require('../utils/crypto');
-const { setToken } = require('../utils/token');
+const Token = require('../utils/token');
 const { users, sequelize } = require('../db/models');
 const { Op } = require('sequelize');
 
@@ -27,7 +27,7 @@ const userLogin = async (req, res, next) => {
 		});
 		if (result) {
 			// 设置token
-			setToken({ userId: result.dataValues.id }, res);
+			new Token().generateToken({ userId: result.dataValues.id }, res);
 			res.json(new SuccessModel('登录成功'));
 			return;
 		}

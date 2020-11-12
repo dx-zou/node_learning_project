@@ -1,4 +1,4 @@
-const { verifyToken } = require('../utils/token');
+const Token = require('../utils/token');
 
 /**
  * 登录验证中间件
@@ -15,7 +15,7 @@ const checkHasLogin = (req, res, next) => {
 		return;
 	}
 	const token = req.headers.authorization;
-	verifyToken(token, req, res, next);
+	new Token().verifyToken(token, req, res, next);
 };
 
 module.exports = checkHasLogin;
