@@ -1,7 +1,7 @@
 const { SuccessModel, ErrorModel } = global;
-const { mysql_query } = require('../db/mysql');
 const xss = require('xss');
 const models = require('../db/models');
+const { Op } = require('sequelize');
 
 /**
  * @description 生成博客列表
@@ -11,10 +11,18 @@ const models = require('../db/models');
  */
 const getBlogList = async (req, res, next) => {
 	const { title, pageSize = 10, pageNum = 1 } = req.query;
+	console.log(title);
 	try {
 		const { count, rows } = await models.blogs.findAndCountAll({
 			where: {
 				isDelete: 0,
+				[Op.and]: [
+					{
+						title: {
+							[Op.like]: `%${title}%`,
+						},
+					},
+				],
 			},
 			offset: (pageNum - 1) * pageSize,
 			limit: Number(pageSize),
