@@ -39,6 +39,9 @@ module.exports = (sequelize, DataTypes) => {
 					return `${this.userName}-${this.realName}`;
 				},
 			},
+			phone: {
+				type: DataTypes.STRING,
+			},
 			password: {
 				type: DataTypes.STRING,
 				allowNull: false,

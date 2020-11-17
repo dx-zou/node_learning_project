@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
 			title: DataTypes.STRING,
 			content: DataTypes.STRING,
 			author: DataTypes.STRING,
+			userId: DataTypes.INTEGER,
 			isTop: {
 				type: DataTypes.INTEGER,
 				defaultValue: 1,
@@ -27,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		{
 			sequelize,
+			tableName: 'blog',
 			modelName: 'blogs',
 		}
 	);

@@ -31,12 +31,11 @@ class Token {
 		);
 		jwt.verify(token, cert, { algorithms: ['RS256'] }, (err, decoded) => {
 			if (err) {
-				console.log(err);
 				res.json(new ErrorModel('登录已过期，请重新登录', null, 401));
 				return;
 			} else {
 				// 每次请求校验token通过后，重新签发新的token
-				setToken({ username: 'developer' }, res);
+				this.generateToken({ username: 'developer' }, res);
 				next();
 			}
 		});
