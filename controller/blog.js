@@ -10,29 +10,24 @@ const models = require('../db/models');
  * @param {*} next
  */
 const getBlogList = async (req, res, next) => {
-	const { author, keyword, pageSize = 10, pageNum = 1 } = req.query;
-	// const pageStart = (pageNum - 1) * pageSize;
-	// let sql = `select * from blogs where isDelete=0 order by id limit ${pageStart},${pageSize}`;
-	// let totalSql = `select count(1) as total from blogs where isDelete=0`;
-	// if (author) {
-	// 	sql += `and author='${author}' `;
-	// }
-	// if (keyword) {
-	// 	sql += `and title like '%${keyword}%' `;
-	// }
-	// const result = await mysql_query(sql);
-	// const totalRes = await mysql_query(totalSql);
-	const { count, rows } = await models.blogs.findAndCountAll({
-		order: [['id']],
-		// offset: pageNum,
-		// limit: pageSize,
-	});
-	res.json(
-		new SuccessModel({
-			rows,
-			total: count,
-		})
-	);
+	const { title, pageSize = 10, pageNum = 1 } = req.query;
+	try {
+		const { count, rows } = await models.blogs.findAndCountAll({
+			where: {
+				isDelete: 0,
+			},
+			offset: (pageNum - 1) * pageSize,
+			limit: Number(pageSize),
+		});
+		res.json(
+			new SuccessModel({
+				rows,
+				total: count,
+			})
+		);
+	} catch (error) {
+		res.json(new ErrorModel('查询失败'));
+	}
 };
 
 /**
@@ -41,12 +36,14 @@ const getBlogList = async (req, res, next) => {
  * @param {*} res
  * @param {*} next
  */
-const getBlogDetail = (req, res, next) => {
+const getBlogDetail = async (req, res, next) => {
 	const { id } = req.params;
-	let sql = `select * from blogs where id = '${id}'`;
-	mysql_query(sql).then(rows => {
-		res.json(new SuccessModel(rows[0]));
-	});
+	try {
+		const result = await models.blogs.findByPk(id);
+		res.json(new SuccessModel(result.dataValues));
+	} catch (error) {
+		res.json('查询失败');
+	}
 };
 /**
  * @description 新增博客
@@ -54,23 +51,21 @@ const getBlogDetail = (req, res, next) => {
  * @param {*} res
  * @param {*} next
  */
-const addBlog = (req, res, next) => {
+const addBlog = async (req, res, next) => {
 	let { title, content, isTop } = req.body;
 	title = xss(title);
 	content = xss(content);
-	const author = req.session.username;
-	const createTime = Date.now();
-	const sql = `
-    insert into blogs (title,content,author,createTime,isTop)
-    values('${title}', '${content}', '${author}', '${createTime}', '${isTop}');
-  `;
-	mysql_query(sql).then(insertData => {
-		res.json(
-			new SuccessModel({
-				id: insertData.insertId,
-			})
-		);
-	});
+	try {
+		await models.blogs.create({
+			title,
+			content,
+			isTop,
+			author: '匿名',
+		});
+		res.json(new SuccessModel('新增成功'));
+	} catch (error) {
+		res.json(new ErrorModel('新增失败'));
+	}
 };
 
 /**
@@ -79,16 +74,27 @@ const addBlog = (req, res, next) => {
  * @param {*} res
  * @param {*} next
  */
-const updateBlog = (req, res, next) => {
-	const { title, content, id, isTop } = req.body;
-	const sql = `update blogs set title='${title}', content='${content}', isTop='${isTop}' where id = ${id}`;
-	mysql_query(sql).then(updateData => {
-		if (updateData.affectedRows > 0) {
-			res.json(new SuccessModel('编辑成功'));
-			return;
+const updateBlog = async (req, res, next) => {
+	let { title, content, id, isTop } = req.body;
+	title = xss(title);
+	content = xss(content);
+	try {
+		const result = await models.blogs.update(
+			{ title, content, isTop },
+			{
+				where: {
+					id,
+				},
+			}
+		);
+		if (result[0] > 0) {
+			res.json(new SuccessModel('更新成功'));
+		} else {
+			res.json(new ErrorModel('更新失败'));
 		}
-		res.json(new ErrorModel('编辑失败'));
-	});
+	} catch (error) {
+		res.json(new ErrorModel('更新失败'));
+	}
 };
 /**
  * @description 删除博客
@@ -96,17 +102,25 @@ const updateBlog = (req, res, next) => {
  * @param {*} res
  * @param {*} next
  */
-const deleteBlog = (req, res, next) => {
+const deleteBlog = async (req, res, next) => {
 	const { id } = req.params;
-	// const sql = `DELETE FROM blogs WHERE id=${id}`;
-	const sql = `update blogs set isDelete=1 WHERE id=${id}`;
-	mysql_query(sql).then(delData => {
-		if (delData.affectedRows > 0) {
+	try {
+		const result = await models.blogs.update(
+			{ isDelete: 1 },
+			{
+				where: {
+					id,
+				},
+			}
+		);
+		if (result[0] > 0) {
 			res.json(new SuccessModel('删除成功'));
-			return;
+		} else {
+			res.json(new ErrorModel('删除失败'));
 		}
+	} catch (error) {
 		res.json(new ErrorModel('删除失败'));
-	});
+	}
 };
 module.exports = {
 	getBlogList,

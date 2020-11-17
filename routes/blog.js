@@ -9,10 +9,10 @@ const {
 } = require('../controller/blog');
 
 // 获取列表
-router.get('/list', getBlogList);
-router.post('/add', addBlog);
-router.get('/detail/:id', getBlogDetail);
-router.patch('/update', updateBlog);
-router.delete('/delete/:id', deleteBlog);
+router.get('/query', getBlogList);
+router.post('/query', addBlog);
+router.get('/query/:id', getBlogDetail);
+router.patch('/query', updateBlog);
+router.delete('/query/:id', deleteBlog);
 
 module.exports = router;

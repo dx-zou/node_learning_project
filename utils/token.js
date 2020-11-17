@@ -18,7 +18,7 @@ class Token {
 			path.join(__dirname, '../config/rsa_private_key.pem')
 		);
 		const token = jwt.sign(data, cert, {
-			expiresIn: '1d',
+			expiresIn: '10m',
 			algorithm: 'RS256',
 		});
 		res.setHeader('Authorization', token);
