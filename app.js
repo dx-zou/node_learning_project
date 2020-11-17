@@ -46,7 +46,7 @@ const corsOptions = {
 	credentials: false,
 	optionsSuccessStatus: 204,
 };
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 // 处理json
 app.use(express.json());
@@ -60,7 +60,7 @@ app.use(commonRouter);
 // 注册博客路由
 app.use('/api/blog', blogRouter);
 // 注册用户路由
-app.use(userRouter);
+app.use('/api/user', userRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

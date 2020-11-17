@@ -9,7 +9,7 @@ const Token = require('../utils/token');
  */
 const checkHasLogin = (req, res, next) => {
 	// 白名单不校验token
-	const whiteList = ['/login', '/register'];
+	const whiteList = ['/api/user/login', '/api/user/register'];
 	if (whiteList.includes(req.url)) {
 		next();
 		return;
