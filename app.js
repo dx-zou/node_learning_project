@@ -46,7 +46,7 @@ const corsOptions = {
 	credentials: false,
 	optionsSuccessStatus: 204,
 };
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 // 处理json
 app.use(express.json());

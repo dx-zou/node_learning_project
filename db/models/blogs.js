@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
 	blogs.init(
 		{
 			title: DataTypes.STRING,
-			content: DataTypes.STRING,
+			content: DataTypes.STRING(3000),
 			author: DataTypes.STRING,
 			userId: DataTypes.INTEGER,
 			isTop: {
@@ -30,6 +30,8 @@ module.exports = (sequelize, DataTypes) => {
 			sequelize,
 			tableName: 'blog',
 			modelName: 'blogs',
+			createdAt: 'createTime',
+			updatedAt: 'updateTime',
 		}
 	);
 	return blogs;

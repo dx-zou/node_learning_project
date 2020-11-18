@@ -1,8 +1,8 @@
 const { SuccessModel, ErrorModel } = global;
 const xss = require('xss');
-const models = require('../db/models');
+const { sequelize, blogs } = require('../db/models');
 const { Op } = require('sequelize');
-
+const { formatDate } = require('../utils/tools');
 /**
  * @description 生成博客列表
  * @param {*} req
@@ -10,19 +10,70 @@ const { Op } = require('sequelize');
  * @param {*} next
  */
 const getBlogList = async (req, res, next) => {
-	const { title, pageSize = 10, pageNum = 1 } = req.query;
-	console.log(title);
+	const {
+		title,
+		author,
+		startTime,
+		endTime,
+		isTop,
+		orderType = 'DESC',
+		orderColumn = 'createTime',
+		pageSize = 10,
+		pageNum = 1,
+	} = req.query;
+	// 查询参数
+	const paramsList = [
+		{
+			title: {
+				[Op.like]: `%${title}%`,
+			},
+		},
+		{
+			author: {
+				[Op.like]: `%${author}%`,
+			},
+		},
+	];
+	if (isTop) {
+		paramsList.push({
+			isTop: {
+				[Op.eq]: Number(isTop),
+			},
+		});
+	}
+	if (startTime && endTime) {
+		paramsList.push({
+			createTime: {
+				[Op.between]: [startTime, endTime],
+			},
+		});
+	}
 	try {
-		const { count, rows } = await models.blogs.findAndCountAll({
+		const { count, rows } = await blogs.findAndCountAll({
+			attributes: {
+				include: [
+					[
+						sequelize.fn(
+							'date_format',
+							sequelize.col('createTime'),
+							'%Y-%m-%d %H:%i:%s'
+						),
+						'createTime',
+					],
+					[
+						sequelize.fn(
+							'date_format',
+							sequelize.col('updateTime'),
+							'%Y-%m-%d %H:%i:%s'
+						),
+						'updateTime',
+					],
+				],
+			},
+			order: [[orderColumn, orderType]],
 			where: {
 				isDelete: 0,
-				[Op.and]: [
-					{
-						title: {
-							[Op.like]: `%${title}%`,
-						},
-					},
-				],
+				[Op.and]: paramsList,
 			},
 			offset: (pageNum - 1) * pageSize,
 			limit: Number(pageSize),
@@ -34,6 +85,7 @@ const getBlogList = async (req, res, next) => {
 			})
 		);
 	} catch (error) {
+		console.log(error);
 		res.json(new ErrorModel('查询失败'));
 	}
 };
@@ -47,7 +99,7 @@ const getBlogList = async (req, res, next) => {
 const getBlogDetail = async (req, res, next) => {
 	const { id } = req.params;
 	try {
-		const result = await models.blogs.findByPk(id);
+		const result = await blogs.findByPk(id);
 		res.json(new SuccessModel(result.dataValues));
 	} catch (error) {
 		res.json('查询失败');
@@ -64,7 +116,7 @@ const addBlog = async (req, res, next) => {
 	title = xss(title);
 	content = xss(content);
 	try {
-		await models.blogs.create({
+		await blogs.create({
 			title,
 			content,
 			isTop,
@@ -87,7 +139,7 @@ const updateBlog = async (req, res, next) => {
 	title = xss(title);
 	content = xss(content);
 	try {
-		const result = await models.blogs.update(
+		const result = await blogs.update(
 			{ title, content, isTop },
 			{
 				where: {
@@ -113,7 +165,7 @@ const updateBlog = async (req, res, next) => {
 const deleteBlog = async (req, res, next) => {
 	const { id } = req.params;
 	try {
-		const result = await models.blogs.update(
+		const result = await blogs.update(
 			{ isDelete: 1 },
 			{
 				where: {
