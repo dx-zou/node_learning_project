@@ -13,6 +13,6 @@ router.get('/query', getBlogList);
 router.post('/query', addBlog);
 router.get('/query/:id', getBlogDetail);
 router.patch('/query', updateBlog);
-router.delete('/query/:id', deleteBlog);
+router.delete('/query', deleteBlog);
 
 module.exports = router;

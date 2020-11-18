@@ -163,13 +163,13 @@ const updateBlog = async (req, res, next) => {
  * @param {*} next
  */
 const deleteBlog = async (req, res, next) => {
-	const { id } = req.params;
+	const ids = req.body;
 	try {
 		const result = await blogs.update(
 			{ isDelete: 1 },
 			{
 				where: {
-					id,
+					id: ids,
 				},
 			}
 		);
@@ -179,6 +179,7 @@ const deleteBlog = async (req, res, next) => {
 			res.json(new ErrorModel('删除失败'));
 		}
 	} catch (error) {
+		console.log(error);
 		res.json(new ErrorModel('删除失败'));
 	}
 };
